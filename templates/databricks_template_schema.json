@@ -1,0 +1,47 @@
+{
+  "properties": {
+    "project_name": {
+      "type": "string",
+      "default": "",
+      "description": "What is the name of the bundle you want to create?",
+      "order": 1
+    },
+    "data_domain": {
+      "type": "string",
+      "default": "",
+      "description": "What is the data domain? (IE Finance, HR, Phone, etc)",
+      "order": 2
+    },
+    "data_source": {
+      "type": "string",
+      "default": "",
+      "description": "Where is the data coming from, datalake, api, etc?",
+      "order": 3
+    },
+    "source_name": {
+      "type": "string",
+      "default": "",
+      "description": "What is the source of this data, five9, salesforce, etc?",
+      "order": 4
+    },
+    "dev_environment": {
+      "type": "string",
+      "default": "",
+      "description": "The URL for your dev Databricks environment.",
+      "order": 5
+    },
+    "staging_environment": {
+      "type": "string",
+      "default": "",
+      "description": "The URL for your staging Databricks environment.",
+      "order": 6
+    },
+    "production_environment": {
+      "type": "string",
+      "default": "",
+      "description": "The URL for your production Databricks environment.",
+      "order": 7
+    }
+  },
+  "success_message": "\nYour bundle for '{{.project_name}}' has been created."
+}

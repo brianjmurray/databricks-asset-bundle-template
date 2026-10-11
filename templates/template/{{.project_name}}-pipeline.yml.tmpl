@@ -1,0 +1,46 @@
+trigger:
+  paths:
+    include:
+      - '{{.project_name}}/'
+    exclude:
+      - README.md
+      - LICENSE
+      - .github
+
+
+parameters:
+  - name: projectName
+    type: string
+    default: '{{.project_name}}'
+  - name: workingDirectory
+    type: string
+    default: '{{.project_name}}'
+  - name: jobNames
+    type: object
+    default: ['{{.project_name}}_Job']
+  - name: devVariableGroup
+    type: string
+    default: 'dbxDev'
+  - name: stagingVariableGroup
+    type: string
+    default: 'dbxStaging'
+  - name: prodVariableGroup
+    type: string
+    default: 'dbxProd'
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: dbx.build
+
+extends:
+
+  template: templates/databricks-bundle-pipeline-template.yml@templates
+  parameters:
+    projectName: {{ "${{" }} parameters.projectName {{ "}}" }}
+    workingDirectory: {{ "${{" }} parameters.workingDirectory {{ "}}" }}
+    jobNames: {{ "${{" }} parameters.jobNames {{ "}}" }}
+    devVariableGroup: {{ "${{" }} parameters.devVariableGroup {{ "}}" }}
+    stagingVariableGroup: {{ "${{" }} parameters.stagingVariableGroup {{ "}}" }}
+    prodVariableGroup: {{ "${{" }} parameters.prodVariableGroup {{ "}}" }}

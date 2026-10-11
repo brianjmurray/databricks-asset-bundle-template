@@ -1,0 +1,52 @@
+**VS Code Databricks Workflow Directions**
+---
+
+### Step 1: Initialize Your Workspace
+---
+
+1. Pull down the main branch (`main`) from your repository.
+2. Create a new feature or bugfix branch with the name of the ticket you're working on, following the format `feature/DE-123` (replace `DE-123` with your actual ticket number).
+
+### Step 2: Develop and Commit Your Changes
+---
+
+1. Make changes to files as needed, committing often.
+2. Push your branch to the remote repository when your branch is in a working state.
+
+### Step 3: Use the Databricks Extension in VS Code
+---
+
+1. Utilize the Databricks extension in VS Code to push and test workflows and pipelines to your dev workspace.
+2. This will allow you to run and debug your code in an isolated dev environment before deploying it to staging production.
+---
+### Step 4: Set Up Your Dev Workspace Catalogs
+---
+
+1. The template provided will use the appropriate catalogs in the dev workspace:
+	* `dev_bronze`
+	* `dev_silver`
+	* `dev_gold`
+2. Each schema will be personalized with `<UserName>_<Schema_Name>` to provide a separate work area in the dev workspace.
+3. Make sure to use the correct variables in your notebooks so that it will be mapped correctly as it is deployed to the different workspaces.
+---
+### Step 5: Prepare Your Branch for Deployment
+---
+
+4. When your branch is ready to be deployed to the staging area (dev workspace), create a pull request from the branch to `dev`.
+5. This will trigger a series of checks, including approval and completion, before deploying your code to the dev workspace.
+---
+### Step 6: Deploy to Staging and Production
+
+6. Once all checks pass, the CI\CD pipeline will be triggered to release your code to the dev workspace using the service account.
+7. The service account will use standard schemas that match the look of production, but with corresponding catalogs (`dev_bronze`, `dev_silver`, and `dev_gold`).
+8. When deploying to staging, a run of the jobs specified in the jobNames array will be run. If you have added jobs to the project make sure to add these here to be included in this stage.
+9. If staging passes, you can merge your feature into the main branch via pull request. You can check the box to delete the feature branch at this point.
+10. When the PR is completed the release will be triggered. There is an approval gate that must be approved to start the release.
+---
+### Step 7: Clean Up and Enable Triggers
+
+
+1. Once your feature is deployed to production, if you did not delete the feature branch as part of the PR you can delete it now to keep the repository organized.
+2. All triggers will be enabled in production, allowing pipelines to trigger according to their settings.
+
+By following these steps, you'll be able to effectively use the VS Code Databricks workflow to develop, test, and deploy your code to production.

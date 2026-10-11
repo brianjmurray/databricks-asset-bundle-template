@@ -1,0 +1,20 @@
+resources:
+  pipelines:
+    {{.project_name}}_{{.data_source}}ToGold:
+      name: {{.project_name}}_{{.data_source}}ToGold
+      libraries:
+        - notebook:
+            path: ../src/{{.project_name}}_{{.data_source}}ToGold.ipynb
+      photon: true
+      catalog: ${var.bronze_catalog}
+      schema: ${var.bronze_schema}
+      serverless: true
+      configuration: 
+        pipeline.configuration.bronze_catalog: "${var.bronze_catalog}"
+        pipeline.configuration.bronze_schema: "${var.bronze_schema}"
+        pipeline.configuration.silver_catalog: "${var.silver_catalog}"
+        pipeline.configuration.silver_schema: "${var.silver_schema}"
+        pipeline.configuration.gold_catalog: "${var.gold_catalog}"
+        pipeline.configuration.fact_schema: "${var.fact_schema}"
+        pipeline.configuration.dim_schema: "${var.dim_schema}"
+

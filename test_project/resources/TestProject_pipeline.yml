@@ -1,0 +1,19 @@
+resources:
+  pipelines:
+    TestProject_DatalakeToGold:
+      name: TestProject_DatalakeToGold
+      libraries:
+        - notebook:
+            path: ../src/TestProject_DatalakeToGold.ipynb
+      photon: true
+      catalog: ${var.bronze_catalog}
+      schema: ${var.bronze_schema}
+      serverless: true
+      configuration:
+        bronze_catalog: "${var.bronze_catalog}"
+        bronze_schema: "${var.bronze_schema}"
+        silver_catalog: "${var.silver_catalog}"
+        silver_schema: "${var.silver_schema}"
+        gold_catalog: "${var.gold_catalog}"
+        fact_schema: "${var.fact_schema}"
+        dim_schema: "${var.dim_schema}"

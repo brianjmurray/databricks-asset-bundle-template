@@ -1,0 +1,75 @@
+# This is a Databricks asset bundle definition for {{.project_name}}.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+
+bundle:
+  name: {{.project_name}}
+
+
+include:
+  - resources/*.yml
+
+variables:
+  bronze_catalog:
+    description: "The 'bronze' catalog is the raw data catalog."
+    default: "bronze"
+  silver_catalog: 
+    description: "The 'silver' catalog is the curated data catalog."
+    default: "silver"
+  gold_catalog: 
+    description: "The 'gold' catalog is the final data catalog."
+    default: "gold"
+  bronze_schema:
+    description: "The 'bronze' schema is the raw data schema."
+    default: "{{.data_source}}"
+  silver_schema:
+    description: "The 'silver' schema is the curated data schema."
+    default: "{{.source_name}}"
+  fact_schema:
+    description: "The 'fact' schema is the final data schema."
+    default: "fact"
+  dim_schema:
+    description: "The 'dim' schema is the final data schema."
+    default: "dim"
+
+targets:
+  # The 'dev' target, for development purposes. This target is the default.
+  dev:
+    # We use 'mode: development' to indicate this is a personal development copy:
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default
+    # - The 'development' mode is used for Delta Live Tables pipelines
+    mode: development
+    default: true
+    workspace:
+      host: {{.dev_environment}}
+      root_path: ~/${bundle.name}/
+    variables:
+      bronze_catalog: "dev_bronze"
+      silver_catalog: "dev_silver"
+      gold_catalog: "dev_gold"
+      bronze_schema: "${workspace.current_user.short_name}_{{.project_name}}"
+      silver_schema: "${workspace.current_user.short_name}_{{.project_name}}"
+      fact_schema: "${workspace.current_user.short_name}_fact"
+      dim_schema: "${workspace.current_user.short_name}_dim"
+
+  ## Optionally, there could be a 'staging' target here.
+  ## (See Databricks docs on CI/CD at https://docs.databricks.com/dev-tools/bundles/ci-cd.html.)
+  #
+  rc:
+    mode: development
+    workspace:
+      host: {{.staging_environment}}
+      root_path: ~/${bundle.name}
+    variables:
+      bronze_catalog: "dev_bronze"
+      silver_catalog: "dev_silver"
+      gold_catalog: "dev_gold"
+
+  # The 'prod' target, used for production deployment.
+  prod:
+    # We use 'mode: production' to indicate this is a production deployment.
+    # Doing so enables strict verification of the settings below.
+    mode: production
+    workspace:
+      host: {{.production_environment}}
+      root_path: /Live/${bundle.name}
