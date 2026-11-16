@@ -1,4 +1,4 @@
-# This is a Databricks asset bundle definition for {{.project_name}}.
+# This is a Declarative Automation Bundle definition for {{.project_name}}.
 # See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
 
 bundle:
@@ -37,7 +37,7 @@ targets:
     # We use 'mode: development' to indicate this is a personal development copy:
     # - Deployed resources get prefixed with '[dev my_user_name]'
     # - Any job schedules and triggers are paused by default
-    # - The 'development' mode is used for Delta Live Tables pipelines
+    # - The 'development' mode is used for Lakeflow Spark Declarative Pipelines
     mode: development
     default: true
     workspace:
