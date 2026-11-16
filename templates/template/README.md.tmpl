@@ -1,0 +1,106 @@
+# {{.project_name}}
+
+A Databricks **Declarative Automation Bundle (DAB)** for the **{{.data_domain}}** domain, initialized for the **{{.source_name}}** source system using **{{.data_source}}** as its source type.
+
+This project is a starting scaffold. Implement and test the transformations before running the pipeline.
+
+## Project structure
+
+```text
+.
+├── databricks.yml
+├── {{.project_name}}-pipeline.yml
+├── README.md
+├── resources/
+│   ├── {{.project_name}}_job.yml
+│   └── {{.project_name}}_pipeline.yml
+├── scratch/
+│   └── exploration.ipynb
+└── src/
+    └── {{.project_name}}_{{.data_source}}ToGold.ipynb
+```
+
+- `databricks.yml`: bundle name, shared variables and environment targets.
+- `resources/{{.project_name}}_job.yml`: scheduled job that starts the pipeline.
+- `resources/{{.project_name}}_pipeline.yml`: Lakeflow Spark Declarative Pipeline (SDP) configuration and notebook reference.
+- `src/{{.project_name}}_{{.data_source}}ToGold.ipynb`: starter notebook that loads pipeline configuration values. Add ingestion and transformations here; separate bronze/silver/gold notebooks are not generated.
+- `scratch/exploration.ipynb`: exploratory queries and troubleshooting shared with the team. It is not referenced by the pipeline, but it is not explicitly excluded from bundle synchronization. Do not commit secrets or confidential results.
+- `{{.project_name}}-pipeline.yml`: Azure DevOps integration example; additional setup is required below.
+
+## Prerequisites
+
+- Modern Databricks CLI and access to the intended workspaces.
+- Optional: VS Code with the Databricks extension.
+- Appropriate permissions and provisioned catalogs/schemas for each environment.
+- A Git repository for this generated project and your team's code-review process.
+
+## Environment configuration
+
+The workspace URLs below were supplied during initialization. Review them before deploying.
+
+| Target | Purpose | Mode | Workspace |
+| --- | --- | --- | --- |
+| `dev` | Personal development (default) | development | {{.dev_environment}} |
+| `rc` | Staging/release candidate | development | {{.staging_environment}} |
+| `prod` | Production | production | {{.production_environment}} |
+
+The default catalog variables are `bronze`, `silver`, and `gold`. Both `dev` and `rc` override these to `dev_bronze`, `dev_silver`, and `dev_gold`. If staging shares a workspace with development, review isolation before use: this template does not automatically provision dedicated staging catalogs or identities.
+
+The `dev` target personalizes bronze/silver schemas with the current user's short name and `{{.project_name}}`; fact/dimension schemas also use the user's short name. Other targets use the shared defaults unless overridden. Review `bronze_schema`, `silver_schema`, `fact_schema`, and `dim_schema` alongside workspace paths and permissions.
+
+## Daily development workflow
+
+1. Pull the latest approved changes from your project's primary branch.
+2. Create a feature or bugfix branch, for example `feature/DE-123`.
+3. Develop in VS Code or your preferred editor. Commit focused changes frequently.
+4. Implement transformations in `src/{{.project_name}}_{{.data_source}}ToGold.ipynb`, using the configuration values provided by the pipeline rather than hard-coded environment names.
+5. Authenticate to your development workspace with a named CLI profile:
+
+   ```sh
+   databricks auth login --host {{.dev_environment}} --profile {{.project_name}}-dev
+   ```
+
+6. From this project's root, validate the development target:
+
+   ```sh
+   databricks bundle validate -t dev --profile {{.project_name}}-dev
+   ```
+
+7. After reviewing the generated resources and permissions, deploy and run explicitly when ready:
+
+   ```sh
+   databricks bundle deploy -t dev --profile {{.project_name}}-dev
+   databricks bundle run {{.project_name}}_Job -t dev --profile {{.project_name}}-dev
+   ```
+
+Deployment and execution can create billable resources. Validation checks configuration but does not prove notebook logic is correct. Test behavior and data quality in development before requesting promotion.
+
+The VS Code Databricks extension can also be used to work with the bundle. Confirm its selected workspace, profile and target before deploying or running.
+
+## Review and promotion
+
+1. Push the feature branch and open a pull request through your team's review process.
+2. After review, deploy the approved commit to `rc` using the staging workspace's authentication profile.
+3. Run the job and check outputs, data-quality behavior and environment isolation.
+4. Promote the tested commit to `prod` only after your required approvals.
+5. Check the production schedule and permissions, then remove the feature branch when appropriate.
+
+The job is configured to run hourly at minute 45 in `America/New_York`. Development mode pauses job triggers by default; production mode does not provide that protection. Review scheduling before the first production deployment.
+
+## Azure DevOps integration
+
+`{{.project_name}}-pipeline.yml` illustrates how this bundle can call a shared deployment pipeline. It references:
+
+- External Azure DevOps Git repository `dbx.build`.
+- Shared file `templates/databricks-bundle-pipeline-template.yml` in that repository.
+- Variable groups `dbxDev`, `dbxStaging`, and `dbxProd`.
+- Job key `{{.project_name}}_Job` in the `jobNames` parameter.
+
+The shared template and variable groups are not included in this project. Supply or replace them, configure authentication/service connections and approval gates, and align the `workingDirectory` and trigger path filter with the location of this bundle in your repository. The example assumes a `{{.project_name}}/` directory; change that if this bundle lives at the repository root. Add other job keys to `jobNames` if your deployment workflow should run them.
+
+Branch-to-environment mappings, automated checks and approval gates depend on your CI/CD implementation; initialization does not create them. GitHub Actions or another deployment system can be substituted.
+
+## References
+
+- [Declarative Automation Bundles](https://docs.databricks.com/aws/en/dev-tools/bundles)
+- [Bundle commands](https://docs.databricks.com/aws/en/dev-tools/cli/bundle-commands)

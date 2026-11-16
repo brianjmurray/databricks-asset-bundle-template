@@ -8,10 +8,16 @@ Answer seven prompts to scaffold bundle configuration, a scheduled job, a Lakefl
 
 Install the modern [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/install), not the legacy Python `databricks-cli` package.
 
+Authenticate to a workspace first (the CLI requires an authenticated workspace client even for custom-template initialization):
+
+```sh
+databricks auth login --host https://YOUR-WORKSPACE --profile bundle-dev
+```
+
 From a directory where you want to create a new project:
 
 ```sh
-databricks bundle init https://github.com/brianjmurray/databricks-asset-bundle-template --template-dir templates
+databricks bundle init https://github.com/brianjmurray/databricks-asset-bundle-template --template-dir templates --profile bundle-dev
 ```
 
 Or clone this repository and initialize from the local template root:
@@ -20,7 +26,7 @@ Or clone this repository and initialize from the local template root:
 git clone https://github.com/brianjmurray/databricks-asset-bundle-template.git
 mkdir bundle-demo
 cd bundle-demo
-databricks bundle init ../databricks-asset-bundle-template/templates
+databricks bundle init ../databricks-asset-bundle-template/templates --profile bundle-dev
 ```
 
 The template root is `templates/`, which contains `databricks_template_schema.json`; `templates/template/` contains the files to generate. Optional: use the Databricks VS Code extension for development.
@@ -73,7 +79,9 @@ The generated `*-pipeline.yml` references an external `dbx.build` repository and
 
 ## Repository map
 
+- `README.md`: documentation for this custom-template repository
 - `templates/`: custom template schema and generated-file sources
+- `templates/template/README.md.tmpl`: project-specific developer guide, rendered as `README.md` in each initialized bundle
 - `test_project/`: separate worked NYC taxi example; replace placeholder workspace settings
 - `typings/`: editor-only Spark/dbutils type hints; not pipeline implementation
 - `scripts/check_structure.py`: offline JSON/notebook/template-reference checks
