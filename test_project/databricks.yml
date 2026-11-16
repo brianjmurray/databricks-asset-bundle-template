@@ -1,4 +1,4 @@
-# This is a Databricks asset bundle definition for TestProject.
+# This is a Declarative Automation Bundle definition for TestProject.
 # See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
 
 bundle:
@@ -40,7 +40,7 @@ targets:
     mode: development
     default: true
     workspace:
-      host: https://dbc-cde6532e-ff36.cloud.databricks.com/
+      host: https://your-workspace.cloud.databricks.com
       root_path: ~/${bundle.name}/
     variables:
       bronze_catalog: "dev_bronze"
@@ -57,14 +57,14 @@ targets:
   rc:
     mode: development
     workspace:
-      host: https://dbc-cde6532e-ff36.cloud.databricks.com/
+      host: https://your-workspace.cloud.databricks.com
       root_path: ~/staging/${bundle.name}
     variables:
       bronze_catalog: "staging_bronze"
       silver_catalog: "staging_silver"
       gold_catalog: "staging_gold"
     run_as:
-      user_name: "brian@cfktech.com"
+      user_name: "your-user@example.com"
 
   # The 'prod' target, used for production deployment.
   prod:
@@ -72,5 +72,5 @@ targets:
     # Doing so enables strict verification of the settings below.
     mode: production
     workspace:
-      host: https://dbc-cde6532e-ff36.cloud.databricks.com/
+      host: https://your-workspace.cloud.databricks.com
       root_path: /Live/${bundle.name}
